@@ -1,4 +1,4 @@
-NAME		:= ca_ext.exe
+NAME		:= run.exe
 SRC_PATH	:= srcs/bin/
 LIB_PATH	:= srcs/include/
 
