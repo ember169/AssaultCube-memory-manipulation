@@ -10,6 +10,8 @@ void    terminate(t_main *main)
 {
     CloseHandle(main->process.hwindow);
     CloseHandle(main->process.hprocess);
+    if (main->ent.bots)
+        free(main->ent.bots);
     printf("[i] Clean exit...\n");
     exit(1);
 }

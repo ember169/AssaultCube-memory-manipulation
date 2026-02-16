@@ -19,12 +19,10 @@ static void  get_process_infos(t_main *main, char *window)
     if (!main->process.hprocess)
         throw_error(main, "[!] Error getting process handle\n");
     printf("[x] Grabbed following infos:\n\
-    > hwindow: %p\n\
-    > pid: %lu\n\
-    > hprocess: %p\n", main->process.hwindow, main->process.pid, main->process.hprocess);
+    > PID: %lu\n", main->process.pid);
 }
 
-static void    get_module_base_address(t_main *main)
+static void    get_allocation_base(t_main *main)
 {
     HANDLE              snapshot;
     MODULEENTRY32       module;
@@ -38,7 +36,7 @@ static void    get_module_base_address(t_main *main)
             res = Module32Next(snapshot, &module);
     }
     main->process.base_addr = (uintptr_t)module.modBaseAddr;
-    printf("    > Base module address: %p\n", (void *)main->process.base_addr);
+    printf("    > Allocation base: %p\n", (void *)main->process.base_addr);
     CloseHandle(snapshot);
 }
 
@@ -52,24 +50,48 @@ static void    get_player_addresses(t_main *main)
     static_ptr = main->process.base_addr + 0x17E0A8;
     ReadProcessMemory(main->process.hprocess, (LPCVOID)static_ptr, &main->player.base_addr,\
      4, &lp_byte_read);
-    printf("    > Player base: 0x%X\n", main->player.base_addr);
+    printf("    > Player base address: 0x%X\n", main->player.base_addr);
     if (main->player.base_addr == 0)
         throw_error(main, "[!] Error getting player base address\n");
 
     // PLAYER DATA (BASE ADDR + OFFSETS)
-    // ammo (0x140)
+    // Ammo (0x140)
     main->player.ammo_addr = main->player.base_addr + 0x140;
     ReadProcessMemory(main->process.hprocess, (LPCVOID)main->player.ammo_addr, &buf,\
      4, NULL);
-    printf("    > Ammo address (%d left): 0x%X\n", buf, main->player.ammo_addr);
-    // health TODO (0xF8)
+    printf("        > Ammo address (%d left): 0x%X\n", buf, main->player.ammo_addr);
+
+    // Health (0xF8) -> TO_FIX
+    main->player.health_addr = main->player.base_addr + 0xF8;
+    ReadProcessMemory(main->process.hprocess, (LPCVOID)main->player.health_addr, &buf,\
+     4, NULL);
+    printf("        > Health address (%d left): 0x%X\n", buf, main->player.health_addr);
+}
+
+static void     get_entity_list(t_main *main)
+{
+    SIZE_T      lp_byte_read;
+
+    main->ent.count_addr = main->process.base_addr + 0x191FD4;
+    ReadProcessMemory(main->process.hprocess, (LPCVOID)main->ent.count_addr, &main->ent.player_count,\
+    4, &lp_byte_read);
+    printf("    > Player number address (%d players): 0x%X\n", main->ent.player_count, main->ent.count_addr);
+    
+    main->ent.bots = malloc(main->ent.player_count * sizeof(t_bot));
+    if (!main->ent.bots)
+        throw_error(main, "[!] Error allocating ent.bots");
+    
+    ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->process.base_addr + 0x191FCC), &main->ent.list_ptr,\
+    4, &lp_byte_read);
+    printf("    > Entity list pointer: 0x%X\n", main->ent.list_ptr);
 }
 
 void    gather_addresses(t_main *main, char *window)
 {
     initialize_structures(main);
     get_process_infos(main, window);
-    get_module_base_address(main);
+    get_allocation_base(main);
     get_player_addresses(main);
+    get_entity_list(main);
     printf("[x] Everything has been gathered successfully.\n");
 }

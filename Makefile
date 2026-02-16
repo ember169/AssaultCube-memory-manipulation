@@ -10,7 +10,7 @@ SRCS		:= \
 	$(SRC_PATH)main.c \
 	$(SRC_PATH)initializer.c \
 	$(SRC_PATH)terminate.c \
-	$(SRC_PATH)cheats.c \
+	$(SRC_PATH)hack_thread.c \
 	$(SRC_PATH)utils.c
 OBJS		:= $(SRCS:.c=.o)
 
