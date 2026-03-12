@@ -9,10 +9,13 @@
 # include <stdint.h>
 # include <tlhelp32.h>
 # include <process.h>
+# include <winuser.h>
+# include <wingdi.h>
+# include <errhandlingapi.h>
+# include <winbase.h>
 
 # include "structures.h"
 # include "prototypes.h"
-
-#define UI_START_LINE 20
+# include "macros.h"
 
 #endif

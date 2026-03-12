@@ -47,7 +47,7 @@ static void    get_player_addresses(t_main *main)
     int         buf;
 
     // PLAYER BASE
-    static_ptr = main->process.base_addr + 0x17E0A8;
+    static_ptr = main->process.base_addr + OFF_PLAYER_ADDR;
     ReadProcessMemory(main->process.hprocess, (LPCVOID)static_ptr, &main->player.base_addr,\
      4, &lp_byte_read);
     printf("    > Player base address: 0x%X\n", main->player.base_addr);
@@ -56,23 +56,36 @@ static void    get_player_addresses(t_main *main)
 
     // PLAYER DATA (BASE ADDR + OFFSETS)
     // Ammo (0x140)
-    main->player.ammo_addr = main->player.base_addr + 0x140;
+    buf = 0;
+    main->player.ammo_addr = main->player.base_addr + OFF_PLAYER_AMMO;
     ReadProcessMemory(main->process.hprocess, (LPCVOID)main->player.ammo_addr, &buf,\
      4, NULL);
     printf("        > Ammo address (%d left): 0x%X\n", buf, main->player.ammo_addr);
 
     // Health (0xF8) -> TO_FIX
-    main->player.health_addr = main->player.base_addr + 0xF8;
+    buf = 0;
+    main->player.health_addr = main->player.base_addr + OFF_PLAYER_HEALTH;
     ReadProcessMemory(main->process.hprocess, (LPCVOID)main->player.health_addr, &buf,\
      4, NULL);
     printf("        > Health address (%d left): 0x%X\n", buf, main->player.health_addr);
+
+    // Position ()
+    ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + OFF_PLAYER_POS_X), &main->player.x,\
+     4, NULL);
+    ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + OFF_PLAYER_POS_Y), &main->player.y,\
+     4, NULL);
+    ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + OFF_PLAYER_POS_Z), &main->player.z,\
+     4, NULL);
+    printf("        > Position: X:0x%X Y:0x%X Z:0x%X\n", main->player.base_addr + OFF_PLAYER_POS_X,\
+         main->player.base_addr + OFF_PLAYER_POS_Y, \
+         main->player.base_addr + OFF_PLAYER_POS_Z);
 }
 
 static void     get_entity_list(t_main *main)
 {
     SIZE_T      lp_byte_read;
 
-    main->ent.count_addr = main->process.base_addr + 0x191FD4;
+    main->ent.count_addr = main->process.base_addr + OFF_PLAYER_COUNT;
     ReadProcessMemory(main->process.hprocess, (LPCVOID)main->ent.count_addr, &main->ent.player_count,\
     4, &lp_byte_read);
     printf("    > Player number address (%d players): 0x%X\n", main->ent.player_count, main->ent.count_addr);
@@ -81,7 +94,7 @@ static void     get_entity_list(t_main *main)
     if (!main->ent.bots)
         throw_error(main, "[!] Error allocating ent.bots");
     
-    ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->process.base_addr + 0x191FCC), &main->ent.list_ptr,\
+    ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->process.base_addr + OFF_ENTITY_LIST), &main->ent.list_ptr,\
     4, &lp_byte_read);
     printf("    > Entity list pointer: 0x%X\n", main->ent.list_ptr);
 }

@@ -18,6 +18,19 @@ static void get_bot_coords(t_main *main, int i)
     }
 }
 
+static void get_player_coords(t_main *main)
+{
+    if (main->player.base_addr != 0)
+    {
+        ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + 0x4), &main->player.x,\
+        4, NULL);
+        ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + 0x8), &main->player.y,\
+        4, NULL);
+        ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + 0xC), &main->player.z,\
+        4, NULL);
+    }
+}
+
 unsigned int    __stdcall hack_thread(void *arg)
 {
     t_main  *main;
@@ -42,6 +55,7 @@ unsigned int    __stdcall hack_thread(void *arg)
         if (main->config.esp)
         {
             i = 0;
+            get_player_coords(main);
             while(i < main->ent.player_count) 
             {
                 get_bot_coords(main, i);
@@ -49,6 +63,6 @@ unsigned int    __stdcall hack_thread(void *arg)
             }
             refresh_debug_ui(main);
         }
-        sleep(10);
+        Sleep(500);
     }
 }

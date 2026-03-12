@@ -16,7 +16,8 @@ void    offset_scan(t_main *main)
     }
 }
 
-void set_cursor_position(int x, int y) {
+void    set_cursor_position(int x, int y)
+{
     // \033[%d;%dH place le curseur à la ligne Y et colonne X
     // On ajoute 1 car les terminaux commencent à 1,1
     printf("\033[%d;%dH", y + 1, x + 1);
@@ -47,4 +48,22 @@ void    refresh_debug_ui(t_main *main)
                 main->ent.bots[i].z);
         i++;
     }
+}
+
+char    *GetLastErrorAsString(void)
+{
+    DWORD   errorMessageID;
+    LPSTR   messageBuffer;
+
+    errorMessageID = GetLastError();
+    if (!errorMessageID)
+        return (NULL);
+    messageBuffer = NULL;
+    FormatMessageA(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL, errorMessageID, 
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
+        (LPSTR)&messageBuffer, 0, NULL);
+
+    return (messageBuffer);
 }

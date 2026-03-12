@@ -1,18 +1,22 @@
 NAME		:= run.exe
-SRC_PATH	:= srcs/bin/
+SRC_PATH	:= srcs/
 LIB_PATH	:= srcs/include/
+OBJ_PATH	:= objs/
 
 CC			:= i686-w64-mingw32-gcc
 CFLAGS		:= -Wall -Wextra -Werror -g3
 INCLUDES	:= -I $(LIB_PATH)
 
-SRCS		:= \
-	$(SRC_PATH)main.c \
-	$(SRC_PATH)initializer.c \
-	$(SRC_PATH)terminate.c \
-	$(SRC_PATH)hack_thread.c \
-	$(SRC_PATH)utils.c
-OBJS		:= $(SRCS:.c=.o)
+FILES		:= \
+				main.c \
+				memory_manager.c \
+				terminate.c \
+				hack_thread.c \
+				utils.c \
+				draw.c \
+				overlay_manager.c
+SRCS        := $(addprefix $(SRC_PATH), $(FILES))
+OBJS        := $(addprefix $(OBJ_PATH), $(FILES:.c=.o))
 
 
 ###### RULES ######
@@ -20,16 +24,17 @@ OBJS		:= $(SRCS:.c=.o)
 all : $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $@
+	$(CC) $(CFLAGS) $(OBJS) -o $@ -lgdi32
 
-%:.o %.c
+$(OBJ_PATH)%.o: $(SRC_PATH)%.c
+	@mkdir -p $(OBJ_PATH)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
-clean:
-	rm -f $(OBJS)
 
-fclean:
+clean:
+	rm -rf $(OBJ_PATH)*
+
+fclean: clean
 	rm -f $(NAME)
-	rm -f $(OBJS)
 
 re: fclean all
 
