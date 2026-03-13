@@ -8,13 +8,13 @@ static void get_bot_coords(t_main *main, int i)
      &main->ent.bots[i].base_addr, 4, &lp_byte_read);
     if (main->ent.bots[i].base_addr != 0)
     {
-        // Offsets: X = 0x34 | Y = 0x38 | Z = 0x3C
-        ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->ent.bots[i].base_addr + 0x4),\
-        &main->ent.bots[i].x, 4, &lp_byte_read);
-        ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->ent.bots[i].base_addr + 0x8),\
-        &main->ent.bots[i].y, 4, &lp_byte_read);
-        ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->ent.bots[i].base_addr + 0xC),\
-        &main->ent.bots[i].z, 4, &lp_byte_read);
+        float pos[3];
+        if (ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->ent.bots[i].base_addr + 0x4), &pos, sizeof(pos), NULL))
+        {
+            main->ent.bots[i].x = pos[0];
+            main->ent.bots[i].y = pos[1];
+            main->ent.bots[i].z = pos[2];
+        }
     }
 }
 
@@ -22,12 +22,13 @@ static void get_player_coords(t_main *main)
 {
     if (main->player.base_addr != 0)
     {
-        ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + 0x4), &main->player.x,\
-        4, NULL);
-        ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + 0x8), &main->player.y,\
-        4, NULL);
-        ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + 0xC), &main->player.z,\
-        4, NULL);
+        float   pos[3];
+        if (ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + 0x4), &pos, sizeof(pos), NULL))
+        {
+            main->player.x = pos[0];
+            main->player.y = pos[1];
+            main->player.z = pos[2];
+        }
     }
 }
 
@@ -61,8 +62,8 @@ unsigned int    __stdcall hack_thread(void *arg)
                 get_bot_coords(main, i);
                 i++;
             }
+            draw_enemies(main);
             refresh_debug_ui(main);
         }
-        Sleep(500);
     }
 }

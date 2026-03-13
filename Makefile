@@ -10,11 +10,11 @@ INCLUDES	:= -I $(LIB_PATH)
 FILES		:= \
 				main.c \
 				memory_manager.c \
+				overlay_manager.c \
 				terminate.c \
 				hack_thread.c \
 				utils.c \
-				draw.c \
-				overlay_manager.c
+				esp.c
 SRCS        := $(addprefix $(SRC_PATH), $(FILES))
 OBJS        := $(addprefix $(OBJ_PATH), $(FILES:.c=.o))
 

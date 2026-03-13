@@ -50,6 +50,7 @@ typedef struct  s_main
     t_player    player;
     t_config    config;
     t_entity    ent;
+    HWND        overlay;
 }   t_main;
 
 #endif

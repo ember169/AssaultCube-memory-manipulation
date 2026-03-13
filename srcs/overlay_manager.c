@@ -17,9 +17,9 @@ LRESULT CALLBACK    window_message_management(HWND hWnd, UINT uMsg, WPARAM wPara
 }
 
 /*****
-***        Initializes the layered window and required structures / classes
+***        Initializes the overlay window and required structures / classes
  *****/
-int init_overlay(HWND *layered_window, HWND h_game_window)
+int init_overlay(HWND *overlay, HWND h_game_window)
 {
     WNDCLASSEXA blueprint = {0};
     RECT rect;
@@ -48,7 +48,7 @@ int init_overlay(HWND *layered_window, HWND h_game_window)
     GetWindowRect(h_game_window, &rect);
 
     // --- Window creation ---
-    *layered_window = CreateWindowExA(
+    *overlay = CreateWindowExA(
         WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST,
         "OverlayClass",
         "Overlay",
@@ -61,7 +61,7 @@ int init_overlay(HWND *layered_window, HWND h_game_window)
         blueprint.hInstance, 
         NULL);
 
-    if (!*layered_window)
+    if (!*overlay)
     {
         LPSTR buf;
         buf = GetLastErrorAsString();
@@ -71,7 +71,7 @@ int init_overlay(HWND *layered_window, HWND h_game_window)
     }
 
     // --- Transparency (magenta = invisible) ---
-    SetLayeredWindowAttributes(*layered_window, RGB(255, 0, 255), 0, LWA_COLORKEY);
+    SetLayeredWindowAttributes(*overlay, RGB(255, 0, 255), 0, LWA_COLORKEY);
 
     return (1);
 }

@@ -54,32 +54,21 @@ static void    get_player_addresses(t_main *main)
     if (main->player.base_addr == 0)
         throw_error(main, "[!] Error getting player base address\n");
 
-    // PLAYER DATA (BASE ADDR + OFFSETS)
-    // Ammo (0x140)
+    // Ammo
     buf = 0;
     main->player.ammo_addr = main->player.base_addr + OFF_PLAYER_AMMO;
     ReadProcessMemory(main->process.hprocess, (LPCVOID)main->player.ammo_addr, &buf,\
      4, NULL);
     printf("        > Ammo address (%d left): 0x%X\n", buf, main->player.ammo_addr);
 
-    // Health (0xF8) -> TO_FIX
+    // Health
     buf = 0;
     main->player.health_addr = main->player.base_addr + OFF_PLAYER_HEALTH;
     ReadProcessMemory(main->process.hprocess, (LPCVOID)main->player.health_addr, &buf,\
      4, NULL);
     printf("        > Health address (%d left): 0x%X\n", buf, main->player.health_addr);
-
-    // Position ()
-    ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + OFF_PLAYER_POS_X), &main->player.x,\
-     4, NULL);
-    ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + OFF_PLAYER_POS_Y), &main->player.y,\
-     4, NULL);
-    ReadProcessMemory(main->process.hprocess, (LPCVOID)(main->player.base_addr + OFF_PLAYER_POS_Z), &main->player.z,\
-     4, NULL);
-    printf("        > Position: X:0x%X Y:0x%X Z:0x%X\n", main->player.base_addr + OFF_PLAYER_POS_X,\
-         main->player.base_addr + OFF_PLAYER_POS_Y, \
-         main->player.base_addr + OFF_PLAYER_POS_Z);
 }
+
 
 static void     get_entity_list(t_main *main)
 {
